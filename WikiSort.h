@@ -54,5 +54,6 @@ class WikiSort.h {
 		string[] articleNames;
 		int wordCount;
 		int stopCount;
+		//me trying to edit
 }
 	
