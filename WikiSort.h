@@ -19,7 +19,7 @@
  * 
  * Read everything in, strip punctuation, and break it off into chunks 
  * based on <TITLE> tags
- * 
+ * TODO: data structure for chunks
  * For each chunk: 
  *   - read words into an unordered map with <string, int[]> association. 
  *   The array size is fixed by the number of articles contained
@@ -37,6 +37,8 @@
  *   
  */
 #include <unordered_map>
+#include <vector>
+#include <algorithms>
 #include <iostream>
 class WikiSort.h {
 	public:
@@ -47,8 +49,9 @@ class WikiSort.h {
 		void reportStopWords();
 		unordered_map<string, int*> readFile();				// read file into the map
 		unordered_map<string, int*> readFileOptimized();	// optimize later hack sooner
-		void stripRetrieve
-		unordered_map wordMap;
+		void stripRetrieve();	// strip punctuation, set articleNames and numTitles
+		unordered_map<string, int*> wordMap;
+		vector<string> alphabeticKeys;
 		string fileName;
 		int numTitles;			// the number of articles, also length articleNames
 		string[] articleNames;
