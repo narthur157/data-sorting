@@ -1,3 +1,3 @@
-$(EXECUTABLE) = prj
+EXECUTABLE = prj
 all:
-	g++ -std=c++0x -Wall -o $(EXECUTABLE) WikiSort.cpp
+	g++ -std=c++0x -Wall -o $(EXECUTABLE) WikiSort.cpp Driver.cpp

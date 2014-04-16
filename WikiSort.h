@@ -36,27 +36,28 @@
  * iterate through the vector, printing their mapped values.
  *   
  */
+#ifndef WIKI_SORT_H
+#define WIKI_SORT_H
 #include <unordered_map>
 #include <vector>
-#include <algorithms>
 #include <iostream>
-class WikiSort.h {
+class WikiSort {
 	public:
-		void analyze(string fileName);	// all we need to expose to the driver
+		void analyze(std::string fileName);	// all we need to expose to the driver
 	private:
-		bool isStop(string s);	// compare hash of lowercase s with hash of every stop word
+		bool isStop(std::string s);	// compare hash of lowercase s with hash of every stop word
 		void reportTop();		//
 		void reportStopWords();
-		unordered_map<string, int*> readFile();				// read file into the map
-		unordered_map<string, int*> readFileOptimized();	// optimize later hack sooner
-		void stripRetrieve();	// strip punctuation, set articleNames and numTitles
-		unordered_map<string, int*> wordMap;
-		vector<string> alphabeticKeys;
-		string fileName;
+		void readFile();				// read file into the map
+		void readFileOptimized();	// optimize later hack sooner
+		std::unordered_map<string, int*> stripRetrieve(std::string articles);	// strip punctuation, set articleNames and numTitles
+		
+        std::unordered_map<std::string, int*> wordMap;
+		std::vector<std::string> alphabeticKeys;
+		std::string fileName;
 		int numTitles;			// the number of articles, also length articleNames
-		string[] articleNames;
+		std::string* articleNames;
 		int wordCount;
 		int stopCount;
-		//me trying to edit
-}
-	
+};
+#endif
