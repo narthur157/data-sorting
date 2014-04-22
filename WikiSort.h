@@ -41,23 +41,34 @@
 #include <unordered_map>
 #include <vector>
 #include <iostream>
+#include <unordered_set>
 class WikiSort {
 	public:
+		WikiSort();
 		void analyze(std::string fileName);	// all we need to expose to the driver
 	private:
 		bool isStop(std::string s);	// compare hash of lowercase s with hash of every stop word
+		//bool occurCompare(std::vector<int> a, std::vector<int> b);
+		struct occurCompare;
 		void reportTop();		//
 		void reportStopWords();
+		void reportAlpha();
 		void readFile();				// read file into the map
 		void readFileOptimized();	// optimize later hack sooner
-		std::unordered_map<string, int*> stripRetrieve(std::string articles);	// strip punctuation, set articleNames and numTitles
-		
-        std::unordered_map<std::string, int*> wordMap;
+		void stripRetrieve();	// strip punctuation, set articleNames and numTitles
+		void insertWord(std::string s, int n);
+		int sumVec(std::vector<int> v);
+		static int staticSum(const std::vector<int>& v);
+        std::unordered_map<std::string, std::vector<int>> wordAcc;
+        std::unordered_set<std::string> stopWords;
 		std::vector<std::string> alphabeticKeys;
+		std::vector<std::string> articleVec;
+		std::vector<std::string> titles;
 		std::string fileName;
 		int numTitles;			// the number of articles, also length articleNames
 		std::string* articleNames;
-		int wordCount;
+		int grandCount;
+		int nonStopCount;
 		int stopCount;
 };
 #endif
