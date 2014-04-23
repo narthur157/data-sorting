@@ -51,12 +51,13 @@ class WikiSort {
 		//bool occurCompare(std::vector<int> a, std::vector<int> b);
 		struct occurCompare;
 		void reportTop();		//
-		void reportStopWords();
+		void reportStop();
 		void reportAlpha();
 		void readFile();				// read file into the map
 		void readFileOptimized();	// optimize later hack sooner
 		void stripRetrieve();	// strip punctuation, set articleNames and numTitles
 		void insertWord(std::string s, int n);
+		int vecMax(std::vector<int> a);
 		int sumVec(std::vector<int> v);
 		static int staticSum(const std::vector<int>& v);
         std::unordered_map<std::string, std::vector<int>> wordAcc;

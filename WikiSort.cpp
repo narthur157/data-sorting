@@ -24,6 +24,10 @@ void WikiSort::analyze(string f) {
 	fileName=f;
 	readFile();
 	reportAlpha();
+	reportStop();
+    reportTop();
+    
+    /*
 	int uniqueNonStop = 0;
 	int uniqueStop = 0;
     for (unordered_map<string, vector<int>>::iterator it=wordAcc.begin(); it != wordAcc.end(); it++) {
@@ -46,8 +50,8 @@ void WikiSort::analyze(string f) {
     //	cout << *it << endl;
     
     cout << "Grand Count: " << grandCount << " Stop Count: " << stopCount << " Non-Stop Count: " << nonStopCount << endl;
-    cout << "Unique stop count: " << uniqueStop << " Unique non-stop count: " << uniqueNonStop << endl;
-    reportTop();
+    cout << "Unique stop count: " << uniqueStop << " Unique non-stop count: " << uniqueNonStop << endl;*/
+    
 }
 int WikiSort::sumVec(vector<int> v) {
 	int total = 0;
@@ -65,70 +69,58 @@ bool WikiSort::isStop(string s) {
     else return false;*/
     return element != stopWords.end();
 }
+int WikiSort::vecMax(vector<int> a) {
+	int max=0;
+	for (int i = 0; i < a.size(); i++) if (a[i] > a[max]) max = i;
+	return max; 
+}
 void WikiSort::reportTop(){
 	vector<string> values;
 	int topFive = grandCount * 0.05;
-	cout << "top five: " << topFive << endl;
-	int max = -1;
-	int oldMax=99999;
-	vector<string> top;
+	//cout << "top five: " << topFive << endl;
+	int oldMax = -1;
+	int maxVal=-1;
+	string maxWord="";
+	ofstream out("report.txt");
+	vector<int> keepVec;
 	for (int i = 0; i < topFive; i++) {
-		string wMax;
-		for (auto wordPair : wordAcc) {
-			int sum = sumVec(wordPair.second);
-			if (sum > max && sum < oldMax) {
-				wMax=wordPair.first;
-				max=sumVec(wordPair.second); 
-			}
-			if (sum == oldMax && wMax != wordPair.first) {
-				cout << wMax << " : " << wordPair.first << endl;
-				i--;
-				max=sum;
-				wMax=wordPair.first;
+		if (wordAcc.empty()) break;		
+		maxVal=0;
+		for (const auto& kv : wordAcc) {
+			if (!isStop(kv.first)) {
+				if (sumVec(kv.second) > maxVal) {
+					maxVal = sumVec(kv.second);
+					maxWord = kv.first;
+					keepVec = kv.second;
+				}
 			}
 		}
+		wordAcc.erase(maxWord);
+		oldMax=maxVal;
+		out << maxWord << ", " << maxVal << ", " << titles[vecMax(keepVec)] << endl;
+		//cout << "Top:" << i << " Count:" << maxVal << " Word:<" << maxWord << ">" << endl;
+	}
+	bool tied = true;
+	string oldWord = maxWord;
+	while (tied) {
 		
-		top.push_back(wMax);
-		oldMax=max;
-		max = -1;
+		for (const auto& kv : wordAcc) {
+			if (!isStop(kv.first)) {
+				if (sumVec(kv.second) == maxVal) {
+					maxVal = sumVec(kv.second);
+					maxWord = kv.first;
+					keepVec = kv.second;
+				}
+			}
+		}
+		if (oldWord == maxWord) tied=false;
+		else {
+			wordAcc.erase(maxWord);
+			oldWord=maxWord;
+			out << maxWord << ", " << maxVal << ", " << titles[vecMax(keepVec)] << endl;
+			//cout << "Count:" << maxVal << " Word:<" << maxWord << ">" << endl;
+		}
 	}
-	for (string word : top) {
-		cout << word;// << ": " << wordAcc[word] << endl;
-	}
-	/*
-	for (auto wordPair: wordAcc) {
-		values.push_back(wordPair.first);
-	}
-	vector<int> keys;
-	for (auto wordPair: wordAcc) {
-		keys.push_back(sumVec(wordPair.second));
-	}
-	
-	map<int, string> swapMap;
-	pair<int, string> swapPair;
-	for (int i = 0; i < keys.size(); i++){
-		swapPair = pair<int,string>(keys[i], values[i]);
-		swapMap.insert(swapPair);
-	}
-	
-	sort(swapMap.begin(), swapMap.end(),std::greater<int>());
-	*/
-	
-	
-	ofstream sortedFile("report.txt");
-	int topCount = 0;
-	
-	bool tied = false;
-	string word;
-	string oldWord = "";
-	/*while (topCount <= grandCount*0.05 || tied) {
-		word = keys[topCount];
-		if (sumVec(wordAcc[oldWord]) == sumVec(wordAcc[word])) tied=true;
-		else tied=false;
-		topCount++;
-		cout << word << ": " << sumVec(wordAcc[word]) << endl;
-		oldWord=word;
-	}*/
 }
 void WikiSort::reportAlpha() {
 	// put keys into a vector for sorting
@@ -141,6 +133,15 @@ void WikiSort::reportAlpha() {
 		sortedFile << key << " " << sumVec(wordAcc[key]) << endl;
 	}
 	
+}
+void WikiSort::reportStop() {
+	float total = 0;
+	float stop = 0;
+	for (auto wordPair : wordAcc) {
+		if (isStop(wordPair.first)) stop+= sumVec(wordPair.second);
+		total+=sumVec(wordPair.second);
+	}	
+	cout << (stop/total) * 100 << "% stop words" << endl;
 }
 void WikiSort::insertWord(string s, int n) {
 	// insert string s into wordAcc and increment position n in wordAcc int vector
@@ -163,9 +164,7 @@ void WikiSort::insertWord(string s, int n) {
 		grandCount++;
 	}
 }
-void WikiSort::reportStopWords() {
-	
-}
+
 
 void WikiSort::readFile() {
     ifstream input(fileName);
